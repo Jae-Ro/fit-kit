@@ -3,7 +3,7 @@
 *Fashion Intelligence Kit* - a natural language search and outfit recommender system for amazon fashion products with AI-powered try-on visualization.
 
 
-https://github.com/user-attachments/assets/dacbf196-f62d-46da-956b-644eba4d272c
+[![FIT-KIT Demo](docs/assets/thumbnail.png)](https://github.com/user-attachments/assets/dacbf196-f62d-46da-956b-644eba4d272c)
 
 
 **Tech Stack:** Python, Docker, Redis, Litestar, Taskiq, Redis Streams, gRPC, React, FashionSigLIP, OutfitTransformer, OpenAI
