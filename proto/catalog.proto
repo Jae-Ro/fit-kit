@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package fitkit;
+
+service CatalogSearch {
+  // Hybrid search: dense + BM25 with progressive filter fallback
+  rpc Search (SearchRequest) returns (SearchResponse);
+
+  // Catalog metadata for frontend display
+  rpc GetCatalogInfo (Empty) returns (CatalogInfo);
+
+  // Fetch embeddings by ASIN for live outfit scoring
+  rpc GetEmbeddings (EmbeddingRequest) returns (EmbeddingResponse);
+
+  // Fetch full product details for modal display
+  rpc GetProductDetail (ProductDetailRequest) returns (ProductDetailResponse);
+}
+
+message ProductDetailRequest {
+  string asin = 1;
+}
+
+message ProductDetailResponse {
+  string asin = 1;
+  string title = 2;
+  repeated string features = 3;
+  string details_json = 4;
+  string reviews_json = 5;
+  float average_rating = 6;
+  string clip_category = 7;
+  string clip_color = 8;
+  string clip_formality = 9;
+  string clip_season = 10;
+  string clip_gender = 11;
+}
+
+// Embedding lookup 
+
+message EmbeddingRequest {
+  repeated string asins = 1;
+}
+
+message ProductEmbedding {
+  string asin = 1;
+  repeated float image_embedding = 2;
+  repeated float text_embedding = 3;
+}
+
+message EmbeddingResponse {
+  repeated ProductEmbedding products = 1;
+}
+
+// ── Messages ──────────────────────────────────────────────
+
+message SearchRequest {
+  repeated float embedding = 1;     // 768-dim query vector from FashionSigLIP
+  string text = 2;                  // raw text for BM25 scoring
+  Filters filters = 3;
+  int32 top_k = 4;                  // default 5
+  float alpha = 5;                  // dense/sparse fusion weight, default 0.6
+  bool include_embeddings = 6;      // return product embeddings for OT scoring
+  float beta = 7;                   // text vs image weight for adaptive mode (0=image, 1=text)
+  float min_dense_ratio = 8;        // relative dense score floor
+  float min_dense_score = 9;        // absolute dense score floor
+}
+
+message Filters {
+  repeated string category = 1;     // e.g. ["tops", "sweaters"]
+  string gender = 2;               // men, women, boys, girls, unisex_adults
+  string season = 3;               // summer, winter, spring, fall
+  repeated string formality = 4;   // ["formal", "casual"]
+  repeated string color = 5;       // ["black", "white", "navy"]
+}
+
+message Product {
+  string asin = 1;
+  string title = 2;
+  float score = 3;
+  float average_rating = 4;
+  string clip_color = 5;
+  string clip_category = 6;
+  string image_url = 7;
+  repeated float image_embedding = 8;   // 768-dim, only if include_embeddings=true
+  repeated float text_embedding = 9;    // 768-dim, only if include_embeddings=true
+  // detail fields for product modal
+  repeated string features = 10;
+  string details_json = 11;
+  string review_text = 12;
+  float dense_score = 13;
+  float sparse_score = 14;
+  float text_score = 15;
+  float image_score = 16;
+  string clip_formality = 17;
+  string clip_season = 18;
+  string clip_gender = 19;
+}
+
+message SearchResponse {
+  repeated Product products = 1;
+  map<string, string> filters_used = 2;  // actual filters applied (after fallback)
+  float elapsed_ms = 3;
+}
+
+message CatalogInfo {
+  int32 product_count = 1;
+  repeated string categories = 2;
+  repeated string genders = 3;
+}
+
+message Empty {}

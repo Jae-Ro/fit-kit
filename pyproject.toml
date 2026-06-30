@@ -1,0 +1,111 @@
+[project]
+name = "fit-kit"
+version = "0.1.0"
+description = "Semantic outfit recommendation from natural language queries"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+core = [
+    "bm25s>=0.3.9",
+    "ftfy>=6.3.1",
+    "numba>=0.65.1",
+    "open-clip-torch>=3.3.0",
+    "polars>=1.41.2",
+    "pyarrow>=24.0.0",
+    "pydantic-ai>=1.107.0",
+    "pystemmer>=3.1.0",
+    "safetensors>=0.8.0",
+    "sentence-transformers>=5.6.0",
+    "torch>=2.12.1",
+]
+backend = [
+    "litestar[standard]>=2.0",
+    "uvicorn>=0.30",
+    "redis[hiredis]>=5.0",
+    "taskiq>=0.11",
+    "taskiq-redis>=1.0",
+    "grpcio>=1.60",
+    "protobuf>=4.0",
+    "httpx>=0.27",
+    "openai>=1.0",
+]
+search = [
+    "grpcio>=1.60",
+    "grpcio-tools>=1.60",
+]
+dev = [
+    "notebook>=7.5.5",
+    "ruff>=0.15.8",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.1.0",
+    "datasets>=5.0.0",
+]
+
+[project.scripts]
+fit = "fit_kit:main"
+
+[build-system]
+requires = ["uv_build>=0.11.13,<0.12.0"]
+build-backend = "uv_build"
+
+# uv: platform-aware torch index
+# x86_64 (Linux GPU server) → CUDA 12.6 builds
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu126", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+]
+torchvision = [
+    { index = "pytorch-cu126", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+]
+ 
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+
+[tool.ruff]
+exclude = [
+    ".git",
+    ".eggs",
+    ".ipynb-checkpoints",
+    ".pytype",
+    ".pyenv",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "node_modules",
+    "build",
+    "dist",
+    "site-packages",
+    ".ipynb",
+    ".ruff_cache",
+]
+line-length = 100
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+ignore = ["F401"]
+fixable = ["ALL"]
+
+# allow for unused variables when prefixed with underscore
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+
+asyncio_mode = "auto"
+asyncio_default_test_loop_scope = "session"

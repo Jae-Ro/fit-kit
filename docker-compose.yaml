@@ -1,0 +1,89 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  search-service:
+    platform: ${PLATFORM:-linux/arm64}
+    build:
+      context: .
+      dockerfile: docker/search.Dockerfile
+    ports:
+      - "50051:50051"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data:ro
+      - ./src:/app/src
+    healthcheck:
+      test: ["CMD", "python", "-c", "import grpc; ch=grpc.insecure_channel('localhost:50051'); grpc.channel_ready_future(ch).result(timeout=2)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    platform: ${PLATFORM:-linux/arm64}
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data/catalog/images:/app/data/catalog/images
+      - ./data/catalog/models:/app/data/catalog/models
+      - ./src:/app/src
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  worker:
+    platform: ${PLATFORM:-linux/arm64}
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    env_file:
+      - .env
+    command: >
+      taskiq worker serve.worker:broker
+      --max-async-tasks ${TASKIQ_MAX_ASYNC_TASKS:-8}
+    volumes:
+      - ./checkpoints:/app/checkpoints:ro
+      - ./src:/app/src
+    healthcheck:
+      test: ["CMD", "python", "-c", "import redis; r=redis.from_url('redis://redis:6379'); assert r.get('fit-kit:worker:status') == b'ready'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    depends_on:
+      redis:
+        condition: service_healthy
+      search-service:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+      worker:
+        condition: service_healthy
+      search-service:
+        condition: service_healthy
