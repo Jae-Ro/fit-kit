@@ -8,8 +8,7 @@
 
 **Tech Stack:** Python, Docker, Redis, Litestar, Taskiq, Redis Streams, gRPC, React, FashionSigLIP, OutfitTransformer, OpenAI
 
-**Maintainer**: [Jae Ro](mailto:jaero.gatech@gmail.com)
-
+**Maintainer**: Jae Ro
 
 ## Table of Contents
 
