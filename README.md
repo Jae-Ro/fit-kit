@@ -39,7 +39,10 @@ PLATFORM="linux/arm64" # your docker os platform (e.g., don't change if running 
 
 
 ### Download and Inflate Preprocessed Data
-Into root of this repo
+
+[Data Download Link](https://drive.google.com/file/d/1NciBkHmKtYuBQjVYKheilA1tbDEswlNB/view?usp=drive_link)
+
+Unzip zipped data file in root of this repo
 ```bash
 unzip fit_kit_data.zip
 ```
