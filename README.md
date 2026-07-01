@@ -21,6 +21,10 @@
 7. [Future Work](#future-work)
 8. [References](#references)
 
+
+<div style="page-break-after: always;"></div>
+
+
 ## Prerequisites
 
 Environment Variables:
@@ -42,10 +46,14 @@ docker compose --env-file .env up # this can take a few minutes on the first run
 
 Navigate to [http://localhost:5173](http://localhost:5173) to view app
 
+<div style="page-break-after: always;"></div>
+
 
 ## System Architecture
 
 ![architecture-diagram](docs/sa_diagram.drawio.svg)
+
+<div style="page-break-after: always;"></div>
 
 ## API Specification
 
@@ -79,6 +87,8 @@ Enqueue a recommendation task and stream results via SSE.
 | `alpha` | float \| null | 0.8 | Dense vs sparse weight (0 = BM25 only, 1 = dense only) |
 | `beta` | float \| null | 0.4 | Text vs image weight (0 = image only, 1 = text only) |
 | `filters` | object \| null | null | Attribute filters (multiselect per field) |
+
+<div style="page-break-after: always;"></div>
 
 **Response:** `text/event-stream`
 
@@ -121,6 +131,8 @@ data: {"message": "Timeout waiting for results"}
 
 ---
 
+<div style="page-break-after: always;"></div>
+
 ### `GET /api/health`
 Backend and worker health check.
 
@@ -161,6 +173,9 @@ Image proxy with three-layer fallback.
 - `404` — Not found, no fallback provided
 
 ---
+
+<div style="page-break-after: always;"></div>
+
 
 ### `GET /api/products/{asin}`
 Full product details for modal display. Results cached in Redis (1hr TTL).
@@ -235,6 +250,10 @@ Generate an AI try-on image using OpenAI Responses API.
 | `{"error": "No image generated in response"}` | OpenAI returned no image |
 | `{"error": "..."}` | OpenAI API error details |
 
+
+<div style="page-break-after: always;"></div>
+
+
 ## Methodology
 
 ### Data Preparation
@@ -263,9 +282,12 @@ Generate an AI try-on image using OpenAI Responses API.
         rich_features = model.encode_text(tokenizer(rich_texts))  # (batch, 768)
         ```
     * Calculate Cosine similarity between product text embedding and class definition prompt embedding. The class with highest similarity determines the label
+       
+       <div style="page-break-after: always;"></div>
+
         ```python
         sims = 100.0 * rich_features @ cat_feats.T  # (batch, 21)
-        cat_indices = sims.argmax(dim=-1)            # (batch,) — best category per product
+        cat_indices = sims.argmax(dim=-1) # (batch,) — best category per product
         ```
     * Repeat the process but only for `color` for image embeddings. We double down on `color` using both text and images because it can often be the case that the text describing a product may not be an accurate indication of what color the product image shows, which is why we rely heavily on vision for this aspect of shopping.
 
