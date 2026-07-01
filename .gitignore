@@ -222,3 +222,4 @@ archive/
 secrets.env
 
 __MACOSX
+.DS_Store
