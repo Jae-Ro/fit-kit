@@ -45,7 +45,7 @@ Navigate to [http://localhost:5173](http://localhost:5173) to view app
 
 ## System Architecture
 
-[]()
+![architecture-diagram](docs/sa_diagram.drawio.svg)
 
 ## API Specification
 
