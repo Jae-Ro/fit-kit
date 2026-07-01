@@ -22,9 +22,6 @@
 8. [References](#references)
 
 
-<div style="page-break-after: always;"></div>
-
-
 ## Prerequisites
 
 ### Environment Variables
@@ -36,7 +33,6 @@ PLATFORM="linux/arm64" # your docker os platform (e.g., don't change if running 
 
 ### Required Software
 * Docker + Docker Compose
-
 
 ### Download and Inflate Preprocessed Data
 
@@ -52,8 +48,9 @@ unzip fit_kit_data.zip
 ```bash
 docker compose --env-file .env up # this can take a few minutes on the first run
 ```
-
 Navigate to [http://localhost:5173](http://localhost:5173) to view app
+
+![landing-page-opened](docs/assets/landing_opened.png)
 
 <div style="page-break-after: always;"></div>
 
