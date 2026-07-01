@@ -22,6 +22,9 @@
 8. [References](#references)
 
 
+<div style="page-break-after: always;"></div>
+
+
 ## Prerequisites
 
 ### Environment Variables
@@ -48,9 +51,9 @@ unzip fit_kit_data.zip
 ```bash
 docker compose --env-file .env up # this can take a few minutes on the first run
 ```
-Navigate to [http://localhost:5173](http://localhost:5173) to view app
 
-![landing-page-opened](docs/assets/landing_opened.png)
+Navigate to [http://localhost:5173](http://localhost:5173) in your browser to view app!
+
 
 <div style="page-break-after: always;"></div>
 
