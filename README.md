@@ -27,16 +27,22 @@
 
 ## Prerequisites
 
-Environment Variables:
-
+### Environment Variables
 Ensure to set the following environment variables in the `.env` file at the root of the repo
 ```bash
 OPENAI_API_KEY="<insert your openai api key here>"
 PLATFORM="linux/arm64" # your docker os platform (e.g., don't change if running m-series mac)
 ```
 
-Required Software:
+### Required Software
 * Docker + Docker Compose
+
+
+### Download and Inflate Preprocessed Data
+Into root of this repo
+```bash
+unzip fit_kit_data.zip
+```
 
 ## Run Demo
 
@@ -50,6 +56,8 @@ Navigate to [http://localhost:5173](http://localhost:5173) to view app
 
 
 ## System Architecture
+
+-----
 
 ![architecture-diagram](docs/sa_diagram.drawio.svg)
 
